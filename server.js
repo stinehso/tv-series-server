@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-
+const fs = require('fs');
 
 const app = express();
 
@@ -8,7 +8,19 @@ app.use(express.json());
 app.use(cors());
 
 
-app.get('/', (req, res) => { res.send('it is working!') })
+let seriesList;
+fs.readFile('./Series.txt', (err, data) => {
+    if (err) {
+        console.log(err);
+    }
+    seriesList = data.toString('utf8').split('\r\n')
+})
+
+
+app.get('/', (req, res) => { 
+    res.send(seriesList) 
+})
+
 
 
 
