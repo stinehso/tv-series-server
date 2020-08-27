@@ -1,0 +1,27 @@
+{
+  "name": "tv-series-server",
+  "version": "1.0.0",
+  "description": "Server handling API calls to TVmaze, and serving it up as an API",
+  "main": "server.js",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  },
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stinehso/tv-series-server.git"
+  },
+  "author": "Stine",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stinehso/tv-series-server/issues"
+  },
+  "homepage": "https://github.com/stinehso/tv-series-server#readme"
+}
