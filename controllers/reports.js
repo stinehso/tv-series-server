@@ -48,13 +48,19 @@ const prepareSendingFile = (fileName) => {
 const summary = (seriesInfo, res) => {
     //console.log(seriesInfo);
     const fields = 'SHOW_NAME;NETWORK;GENRES;EPISODE_COUNT;RELEASED_EPISODE_COUNT'
+    //const props = [name, show.network, genresTxt, show.episodeCount, show.releasedEpisodeCount]
     let table = getRelevantFields(seriesInfo, fields);
     //table = sortAlpha(table)
     //console.log(table);
     createSummaryFile(table)
+    const tableObject = {
+        headers: Object.keys(table[0]),
+        table: table
+    }
+    res.json(tableObject)
     //const file = prepareSendingFile('summary_report.txt')
     //res.send(file)
-    res.sendFile('/Users/Stine/Documents/Utvikling/Web/payex-kodeoppgave/tv-series-server/summary_report.txt')
+    //res.sendFile('/Users/Stine/Documents/Utvikling/Web/payex-kodeoppgave/tv-series-server/summary_report.txt')
 }
 
 module.exports = {
