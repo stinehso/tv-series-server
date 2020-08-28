@@ -4,6 +4,8 @@ const fs = require('fs');
 const async  = require('express-async-await');
 const fetch = require('node-fetch');
 
+const reports = require('./controllers/reports')
+
 const app = express();
 
 app.use(express.json());
@@ -12,7 +14,10 @@ app.use(cors());
 let seriesList;
 
 async function callTVmaze(show) {
-        const response = await fetch(`http://api.tvmaze.com/singlesearch/shows?q=${show}`, {
+    let tryAgain = true;
+    let response;
+    while (tryAgain) {
+        response = await fetch(`http://api.tvmaze.com/singlesearch/shows?q=${show}`, {
             headers: {
                 'User-Agent': 'SeriesReportServer'
             }
@@ -22,10 +27,12 @@ async function callTVmaze(show) {
             if (res.status === 429) {
                 setTimeout(() => console.log('Trying API again'), 2000);
             } else {
+                tryAgain = false;
                 return res
             }
         }).catch(e => console.log('error:', e))
-        return response
+    }
+    return response   
 }
 
 async function getShowInfo(seriesList) {
@@ -37,18 +44,24 @@ async function getShowInfo(seriesList) {
     return seriesInfo
 } 
 
-app.get('/', (req, res) => { 
+app.get('/all', (req, res) => { 
     fs.readFile('./Series.txt', (err, data) => {
         if (err) throw err;
         seriesList = data.toString('utf8').split('\r\n')
         getShowInfo(seriesList)
         .then(info => {
             console.log(info);
-            res.send(info)
+            fs.writeFile('./all.json', info, () => {
+                res.send(info)
+            })
+            
         })
     })
 })
 
+app.get('/summary', (req, res) => {
+
+})
 
 
 
