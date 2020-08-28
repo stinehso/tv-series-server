@@ -34,6 +34,20 @@ async function getShowInfo(seriesList) {
     return seriesInfo
 } 
 
+async function getShowInfoAndEpisodes(seriesList) {
+    let seriesInfo = [];
+    for (const show of seriesList) {
+        let info = await callTVmaze(show+'&embed=episodes')
+        episodes = {
+            show: info.name,
+            episodes: info._embedded.episodes
+        }
+        seriesInfo.push(episodes)
+    }
+    return seriesInfo
+} 
+
 module.exports = {
-    getShowInfo
+    getShowInfo,
+    getShowInfoAndEpisodes
 }
