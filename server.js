@@ -19,7 +19,7 @@ const readFile = () => {
         return seriesList
     })
 }
-const seriesList = readFile();
+let seriesList = readFile();
 
 
 async function callTVmaze(show) {
@@ -53,6 +53,8 @@ async function getShowInfo(seriesList) {
     return seriesInfo
 } 
 
+
+
 app.get('/all', (req, res) => { 
     fs.readFile('./Series.txt', (err, data) => {
         if (err) throw err;
@@ -68,8 +70,13 @@ app.get('/all', (req, res) => {
     })
 })
 
-app.get('/summary', (req, res) => {
 
+
+app.get('/summary', (req, res) => {
+    getShowInfo(seriesList)
+    .then(info => {
+        reports.summary(info, res)
+    }) 
 })
 
 
