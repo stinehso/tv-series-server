@@ -1,5 +1,7 @@
 const fs = require('fs');
 const path = require('path');
+const fileHandling = require('../fileHandling');
+
 
 const getRelevantFields = (seriesInfo, fields) => {
     let table = [];
@@ -22,19 +24,7 @@ const getRelevantFields = (seriesInfo, fields) => {
     return table
 }
 
-const createFile = (headerString, table, fileName) => {
-    txtString = headerString + '\n';
-    for (const show of table) {
-        props = Object.values(show);
-        row = props.join(';');
-        txtString = txtString + row + '\n'
-    }
-    fs.writeFileSync(fileName, txtString, err => {
-        if (err) {
-            console.log(err);
-        }
-    })
-}
+
 
 const flattenGenres = (shows) => {
     for (const show of shows) {
@@ -44,54 +34,61 @@ const flattenGenres = (shows) => {
     return shows
 }
 
-// const createSummaryFile = (table) => {
-//     txtString = 'SHOW_NAME;NETWORK;GENRES;EPISODE_COUNT;RELEASED_EPISODE_COUNT\n';
-//     for (const show of table) {
-//         genresTxt = show.genres.join(', ')
-//         row = [show.name, show.network, genresTxt, show.episodeCount, show.releasedEpisodeCount].join(';')
-//         txtString = txtString + row + '\n'
-//     }
-//     fs.writeFileSync('summary_report.txt', txtString, err => {
-//         if (err) {
-//             console.log(err);
-//         }
-//     })
-// }
 
 
 const prepareSendingFile = (fileName) => {
     console.log('send');
-    const report = fs.readFileSync(fileName)
+    const report = fs.readFileSync(fileName);
     return report
 }
 
 
-// SHOW_NAME;NETWORK;GENRES;EPISODE_COUNT;RELEASED_EPISODE_COUNT
 const summary = (seriesInfo, res) => {
-    //console.log(seriesInfo);
-    const fields = 'SHOW_NAME;NETWORK;GENRES;EPISODE_COUNT;RELEASED_EPISODE_COUNT'
-    //const props = [name, show.network, genresTxt, show.episodeCount, show.releasedEpisodeCount]
+    const headerString = 'SHOW_NAME;NETWORK;GENRES;EPISODE_COUNT;RELEASED_EPISODE_COUNT'
+    let fields = []
     let table = getRelevantFields(seriesInfo, fields);
     //table = sortAlpha(table)
-    //console.log(table);
-    createSummaryFile(table)
+    table = flattenGenres(table)
+    fileHandling.createFile(headerString, table, 'summary_report.txt')
     const tableObject = {
-        headers: Object.keys(table[0]),
+        headers: ['Name', 'Network', 'Genres', 'Episode count', 'Released episodes count'],
+        keys: Object.keys(table[0]),
         table: table
     }
     res.json(tableObject)
+}
+
+const summaryFile = (req, res) => {
+    console.log('Get summary file');
     //const file = prepareSendingFile('summary_report.txt')
     //res.send(file)
+    const buffer = fs.readFileSync('summary_report.txt');
+    const bufferBase64 = new Buffer.from(buffer);
+    res.status(200).send(bufferBase64);
     //res.sendFile('/Users/Stine/Documents/Utvikling/Web/payex-kodeoppgave/tv-series-server/summary_report.txt')
 }
 
+const nextWeek = (seriesInfo, res) => {
+    const headerString = 'SHOW_NAME;MONDAY;TUESDAY;WEDNESDAY;THURSDAY;FRIDAY;SATURDAY;SUNDAY'
+    let table = getNextWeekFields(seriesinfo);
+    table = filterRunning(table);
+
+    createFile(headerString, table, 'nextWeek_report.txt')
+    const tableObject = {
+        headers: ['Name', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        keys: Object.keys(table[0]),
+        table: table
+    }
+    res.json(tableObject)
+}
+
 module.exports = {
-    summary
+    summary,
+    summaryFile,
+    nextWeek
 }
 
 
-// * NextWeek - Skal grupperes per dag:
-// SHOW_NAME;MONDAY;TUESDAY;WEDNESDAY;THURSDAY;FRIDAY;SATURDAY;SUNDAY
 
 // * Top 10 - Skal liste serier sortert på rating  
 
