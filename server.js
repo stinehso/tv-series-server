@@ -11,7 +11,16 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-let seriesList;
+
+const readFile = () => {
+    fs.readFile('./Series.txt', (err, data) => {
+        if (err) throw err;
+        seriesList = data.toString('utf8').split('\r\n');
+        return seriesList
+    })
+}
+const seriesList = readFile();
+
 
 async function callTVmaze(show) {
     let tryAgain = true;
