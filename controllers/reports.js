@@ -22,19 +22,41 @@ const getRelevantFields = (seriesInfo, fields) => {
     return table
 }
 
-const createSummaryFile = (table) => {
-    txtString = 'SHOW_NAME;NETWORK;GENRES;EPISODE_COUNT;RELEASED_EPISODE_COUNT\n';
+const createFile = (headerString, table, fileName) => {
+    txtString = headerString + '\n';
     for (const show of table) {
-        genresTxt = show.genres.join(', ')
-        row = [show.name, show.network, genresTxt, show.episodeCount, show.releasedEpisodeCount].join(';')
+        props = Object.values(show);
+        row = props.join(';');
         txtString = txtString + row + '\n'
     }
-    fs.writeFileSync('summary_report.txt', txtString, err => {
+    fs.writeFileSync(fileName, txtString, err => {
         if (err) {
             console.log(err);
         }
     })
 }
+
+const flattenGenres = (shows) => {
+    for (const show of shows) {
+        genresTxt = show.genres.join(', ')
+        show.genres = genresTxt;
+    }
+    return shows
+}
+
+// const createSummaryFile = (table) => {
+//     txtString = 'SHOW_NAME;NETWORK;GENRES;EPISODE_COUNT;RELEASED_EPISODE_COUNT\n';
+//     for (const show of table) {
+//         genresTxt = show.genres.join(', ')
+//         row = [show.name, show.network, genresTxt, show.episodeCount, show.releasedEpisodeCount].join(';')
+//         txtString = txtString + row + '\n'
+//     }
+//     fs.writeFileSync('summary_report.txt', txtString, err => {
+//         if (err) {
+//             console.log(err);
+//         }
+//     })
+// }
 
 
 const prepareSendingFile = (fileName) => {
