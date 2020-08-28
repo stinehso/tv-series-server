@@ -1,10 +1,11 @@
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
-const async  = require('express-async-await');
-const fetch = require('node-fetch');
+//const async  = require('express-async-await');
+//const fetch = require('node-fetch');
 
-const reports = require('./controllers/reports')
+const tvApi = require('./controllers/tvApi');
+const reports = require('./controllers/reports');
 
 const app = express();
 
@@ -19,6 +20,7 @@ const readFile = () => {
         return seriesList
     })
 }
+
 let seriesList = readFile();
 
 
@@ -26,30 +28,50 @@ let seriesList = readFile();
 
 
 
-app.get('/all', (req, res) => { 
-    fs.readFile('./Series.txt', (err, data) => {
-        if (err) throw err;
-        seriesList = data.toString('utf8').split('\r\n')
-        getShowInfo(seriesList)
-        .then(info => {
-            console.log(info);
-            fs.writeFile('./all.json', info, () => {
-                res.send(info)
-            })
-            
-        })
-    })
-})
-
-
-
 app.get('/summary', (req, res) => {
-    getShowInfo(seriesList)
+    console.log(seriesList);
+    tvApi.getShowInfo(seriesList)
     .then(info => {
         reports.summary(info, res)
     }) 
 })
 
+app.get('/summary/download', reports.summaryFile)
+
+app.get('/nextWeek', (req, res) => {
+    tvApi.getShowInfo(seriesList)
+    .then(info => {
+        reports.nextWeek(info, res)
+    }) 
+})
+
+app.get('/top10', (req, res) => {
+    tvApi.getShowInfo(seriesList)
+    .then(info => {
+        reports.summary(info, res)
+    }) 
+})
+
+app.get('/topNetworks', (req, res) => {
+    tvApi.getShowInfo(seriesList)
+    .then(info => {
+        reports.summary(info, res)
+    }) 
+})
+
+app.get('/bestEpisode', (req, res) => {
+    tvApi.getShowInfo(seriesList)
+    .then(info => {
+        reports.summary(info, res)
+    }) 
+})
+
+app.get('/recommended', (req, res) => {
+    tvApi.getShowInfo(seriesList)
+    .then(info => {
+        reports.summary(info, res)
+    }) 
+})
 
 
 
