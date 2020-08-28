@@ -1,9 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 const fileHandling = require('../fileHandling');
+const tvApi = require('./tvApi');
 
 
-const getRelevantFields = (seriesInfo, fields) => {
+const getRelevantFields = (seriesInfo, episodeTable) => {
+    // should also get episodeCount and releasedEpisodeCount from episodeTable
     let table = [];
     for (const show of seriesInfo) {
         let networkName;
@@ -37,7 +39,6 @@ const flattenGenres = (shows) => {
 
 
 const prepareSendingFile = (fileName) => {
-    console.log('send');
     const report = fs.readFileSync(fileName);
     return report
 }
@@ -45,9 +46,8 @@ const prepareSendingFile = (fileName) => {
 
 const summary = (seriesInfo, res) => {
     const headerString = 'SHOW_NAME;NETWORK;GENRES;EPISODE_COUNT;RELEASED_EPISODE_COUNT'
-    let fields = []
-    let table = getRelevantFields(seriesInfo, fields);
-    //table = sortAlpha(table)
+    episodeTable = tvApi.getShowInfoAndEpisodes(seriesInfo)
+    let table = getRelevantFields(seriesInfo, episodeTable);
     table = flattenGenres(table)
     fileHandling.createFile(headerString, table, 'summary_report.txt')
     const tableObject = {
@@ -59,7 +59,6 @@ const summary = (seriesInfo, res) => {
 }
 
 const summaryFile = (req, res) => {
-    console.log('Get summary file');
     //const file = prepareSendingFile('summary_report.txt')
     //res.send(file)
     const buffer = fs.readFileSync('summary_report.txt');
@@ -68,24 +67,11 @@ const summaryFile = (req, res) => {
     //res.sendFile('/Users/Stine/Documents/Utvikling/Web/payex-kodeoppgave/tv-series-server/summary_report.txt')
 }
 
-const nextWeek = (seriesInfo, res) => {
-    const headerString = 'SHOW_NAME;MONDAY;TUESDAY;WEDNESDAY;THURSDAY;FRIDAY;SATURDAY;SUNDAY'
-    let table = getNextWeekFields(seriesinfo);
-    table = filterRunning(table);
 
-    createFile(headerString, table, 'nextWeek_report.txt')
-    const tableObject = {
-        headers: ['Name', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-        keys: Object.keys(table[0]),
-        table: table
-    }
-    res.json(tableObject)
-}
 
 module.exports = {
     summary,
-    summaryFile,
-    nextWeek
+    summaryFile
 }
 
 
