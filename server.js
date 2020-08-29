@@ -1,8 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
-//const async  = require('express-async-await');
-//const fetch = require('node-fetch');
 
 const tvApi = require('./controllers/tvApi');
 const summary = require('./controllers/summary');
@@ -30,7 +28,6 @@ const root = __dirname
 
 
 app.get('/summary', (req, res) => {
-    console.log(seriesList);
     tvApi.getShowInfo(seriesList)
     .then(info => {
         summary.summary(info, res)
