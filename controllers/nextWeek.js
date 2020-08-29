@@ -2,10 +2,12 @@ const fileHandling = require('../fileHandling');
 
 const filterRunning = (table) => {
     // should take a list of objects and return the ones that hvave status: running
+    return table
 }
 
 const getNextWeekFields = (table) => {
-
+    // find the relevant values for the table
+    return table
 }
 
 const handleNextWeek = (seriesInfo, res) => {

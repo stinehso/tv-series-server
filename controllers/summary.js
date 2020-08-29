@@ -1,5 +1,3 @@
-const fs = require('fs');
-const path = require('path');
 const fileHandling = require('../fileHandling');
 const tvApi = require('./tvApi');
 
@@ -27,20 +25,12 @@ const getRelevantFields = (seriesInfo, episodeTable) => {
 }
 
 
-
 const flattenGenres = (shows) => {
     for (const show of shows) {
         genresTxt = show.genres.join(', ')
         show.genres = genresTxt;
     }
     return shows
-}
-
-
-
-const prepareSendingFile = (fileName) => {
-    const report = fs.readFileSync(fileName);
-    return report
 }
 
 
@@ -58,13 +48,9 @@ const summary = (seriesInfo, res) => {
     res.json(tableObject)
 }
 
-const summaryFile = (req, res) => {
-    //const file = prepareSendingFile('summary_report.txt')
-    //res.send(file)
-    const buffer = fs.readFileSync('summary_report.txt');
-    const bufferBase64 = new Buffer.from(buffer);
-    res.status(200).send(bufferBase64);
-    //res.sendFile('/Users/Stine/Documents/Utvikling/Web/payex-kodeoppgave/tv-series-server/summary_report.txt')
+
+const summaryFile = (req, res, root) => {
+    res.sendFile('./summary_report.txt', {root: root})
 }
 
 
@@ -76,16 +62,3 @@ module.exports = {
 
 
 
-// * Top 10 - Skal liste serier sortert på rating  
-
-// * Top network - Skal liste "network" samt aktuelle tv-serier basert på gjennomsnittlig-rating.
-// AVERAGE_RATING;NETWORK;TOP_RATED_SHOW;TOP_RATING;SHOW_COUNT
-
-// * Summay - Skal liste alle registrerte tv-serier
-// SHOW_NAME;NETWORK;GENRES;EPISODE_COUNT;RELEASED_EPISODE_COUNT    
-
-// * Best episode - lister opp hvilken episode som er best likt (rating) for tv-serier
-// SHOW_NAME;NETWORK;GENRES;SEASON_NUMBER;EPISODE_NUMBER;EPISODE_NAME;RATING;
-
-// * Recommended show
-// SHOW_NAME;RATING;GENRES;SUMMARY;IMDB_LINK
